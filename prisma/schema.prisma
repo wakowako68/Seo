@@ -1,3 +1,4 @@
+// Forces cache invalidation
 generator client {
   provider = "prisma-client-js"
 }

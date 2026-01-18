@@ -4,6 +4,7 @@ import { analyzeSEO } from '@/lib/gemini';
 import prisma from '@/lib/db';
 
 export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
     try {
