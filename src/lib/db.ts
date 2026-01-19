@@ -10,14 +10,17 @@ declare global {
     var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-// Lazy-loading proxy to prevent initialization during module evaluation (build-time)
-const prisma = new Proxy({} as ReturnType<typeof prismaClientSingleton>, {
-    get: (target, prop, receiver) => {
-        if (!globalThis.prisma) {
-            globalThis.prisma = prismaClientSingleton();
-        }
-        return Reflect.get(globalThis.prisma, prop, receiver);
-    },
-});
+export function getPrisma() {
+    if (typeof window !== 'undefined') {
+        throw new Error('Prisma cannot be used on the client side.');
+    }
 
+    if (!globalThis.prisma) {
+        globalThis.prisma = prismaClientSingleton();
+    }
+    return globalThis.prisma;
+}
+
+// Keep the default export but make it the getter for backward compatibility or just export the getter
+const prisma = getPrisma;
 export default prisma;

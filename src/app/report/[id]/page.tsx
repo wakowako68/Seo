@@ -14,7 +14,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     const p = await params;
     const id = p?.id;
 
-    const report = await prisma.auditReport.findUnique({
+    const db = await prisma();
+    const report = await db.auditReport.findUnique({
         where: { id },
     });
 
@@ -65,7 +66,8 @@ export default async function ReportPage({ params }: Props) {
 
     let report;
     try {
-        report = await prisma.auditReport.findUnique({
+        const db = await prisma();
+        report = await db.auditReport.findUnique({
             where: { id },
         });
     } catch (e) {

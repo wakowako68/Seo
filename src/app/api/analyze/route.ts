@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
         // Step 3: Perspective - Save to DB
         let report;
         try {
-            report = await prisma.auditReport.create({
+            const db = await prisma();
+            report = await db.auditReport.create({
                 data: {
                     url: url,
                     title: scrapedData.title,
