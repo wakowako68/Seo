@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://niche-seo-analyzer.vercel.app/sitemap.xml

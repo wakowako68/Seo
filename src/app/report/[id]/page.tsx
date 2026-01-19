@@ -4,11 +4,58 @@ import prisma from '@/lib/db';
 import AnalysisResult from '@/components/AnalysisResult';
 import ReportBadge from '@/components/ReportBadge';
 import { ShieldCheck, Calendar } from 'lucide-react';
+import { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
+interface Params {
+    id: string;
+}
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+    const p = await params;
+    const id = p?.id;
+
+    const report = await prisma.auditReport.findUnique({
+        where: { id },
+    });
+
+    if (!report) {
+        return {
+            title: 'Report Not Found',
+        };
+    }
+
+    const host = new URL(report.url).hostname;
+    const title = `SEO Audit: ${host} | Niche SEO Analyzer Pro`;
+    const description = report.executiveSummary || `AI-Powered Authority Audit for ${host}`;
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            type: 'article',
+            url: `https://niche-seo-analyzer.vercel.app/report/${id}`,
+            images: [
+                {
+                    url: `/og-image.png`, // Fallback or dynamic image if available
+                    width: 1200,
+                    height: 630,
+                    alt: `SEO Analysis for ${host}`,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [`/og-image.png`],
+        },
+    };
+}
 
 interface Props {
-    params: Promise<{ id: string }>;
+    params: Promise<Params>;
 }
 
 export default async function ReportPage({ params }: Props) {
