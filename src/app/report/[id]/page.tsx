@@ -6,6 +6,9 @@ import ReportBadge from '@/components/ReportBadge';
 import { ShieldCheck, Calendar } from 'lucide-react';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface Params {
     id: string;
 }
