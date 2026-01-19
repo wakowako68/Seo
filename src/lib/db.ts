@@ -1,26 +1,25 @@
-import { PrismaClient } from '@prisma/client';
-
-const prismaClientSingleton = () => {
-    return new PrismaClient({
-        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    });
-};
+import type { PrismaClient } from '@prisma/client';
 
 declare global {
-    var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
+    var prisma: undefined | PrismaClient;
 }
 
-export function getPrisma() {
+export async function getPrisma() {
     if (typeof window !== 'undefined') {
         throw new Error('Prisma cannot be used on the client side.');
     }
 
     if (!globalThis.prisma) {
-        globalThis.prisma = prismaClientSingleton();
+        // Ultimate lazy: Only import when needed
+        const { PrismaClient } = await import('@prisma/client');
+
+        globalThis.prisma = new PrismaClient({
+            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+        });
     }
     return globalThis.prisma;
 }
 
-// Keep the default export but make it the getter for backward compatibility or just export the getter
+// Keep the default export but make it the getter for backward compatibility
 const prisma = getPrisma;
 export default prisma;
